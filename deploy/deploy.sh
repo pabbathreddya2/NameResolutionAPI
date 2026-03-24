@@ -1,7 +1,7 @@
 #!/bin/bash
 
-projectName="biothings-annotator"
-namespace="bte"
+projectName="name-resolution-api"
+namespace="nodenorm"
 
 #set +x
 #export $(egrep -v '^#' .env)

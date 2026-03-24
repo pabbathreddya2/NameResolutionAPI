@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "biothings-annotator.fullname" . }}
+  name: {{ include "name-resolution-api.fullname" . }}
   labels:
-    {{- include "biothings-annotator.labels" . | nindent 4 }}
+    {{- include "name-resolution-api.labels" . | nindent 4 }}
 spec:
   strategy:
     type: {{ .Values.deployment.strategy.type }}
@@ -15,11 +15,11 @@ spec:
   replicas: {{ .Values.deployment.replicaCount }}
   selector:
     matchLabels:
-      {{- include "biothings-annotator.selectorLabels" . | nindent 6 }}
+      {{- include "name-resolution-api.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        {{- include "biothings-annotator.selectorLabels" . | nindent 8 }}
+        {{- include "name-resolution-api.selectorLabels" . | nindent 8 }}
         {{- toYaml .Values.ncats.labels | nindent 8 }}
     spec:
       containers:
@@ -27,14 +27,12 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
+            - name: PORT
+              value: "{{ .Values.containers.port }}"
+            {{- if .Values.containers.es_host }}
             - name: ES_HOST
               value: {{ .Values.containers.es_host }}
-            - name: OPENTELEMETRY_ENABLED
-              value: "{{ .Values.containers.OPENTELEMETRY_ENABLED_VALUE }}"  
-            - name: OPENTELEMETRY_JAEGER_HOST
-              value: "{{ .Values.containers.OPENTELEMETRY_JAEGER_HOST_VALUE }}"
-            - name: OPENTELEMETRY_JAEGER_PORT
-              value: "{{ .Values.containers.OPENTELEMETRY_JAEGER_PORT_VALUE }}"      
+            {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.containers.port }}

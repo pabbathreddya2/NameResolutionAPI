@@ -2,6 +2,7 @@ import importlib.resources
 import importlib.util
 import json
 import logging
+import os
 import pathlib
 import sys
 import types
@@ -142,6 +143,10 @@ class NameResolutionAPINamespace:
         webapp_directory = package_directory.joinpath("webapp")
         configuration["webserver"]["SETTINGS"]["static_path"] = str(webapp_directory)
         configuration["webserver"]["SETTINGS"]["static_url_prefix"] = "/"
+
+        # Override with environment variables if present
+        if os.getenv("ES_HOST"):
+            configuration["elasticsearch"]["ES_HOST"] = os.getenv("ES_HOST")
 
         # Convert nested dicts to SimpleNamespace recursively
         def dict_to_namespace(d):

@@ -29,7 +29,7 @@ class NameResolutionAPINamespace:
 
     def _is_open_telemetry_configurable(self) -> bool:
         """Check for verifying if we can configure opentelemetry."""
-        opentelemetry_enabled = self.config.telemetry["OPENTELEMETRY_ENABLED"]
+        opentelemetry_enabled = self.config.telemetry.OPENTELEMETRY_ENABLED
 
         opentelemetry_module = "opentelemetry"
         opentelemetry_installed = (
@@ -63,10 +63,10 @@ class NameResolutionAPINamespace:
         elasticsearch_configuration = self.config.elasticsearch
 
         elasticsearch_namespace.client = connections.es.get_client(
-            elasticsearch_configuration["ES_HOST"], **elasticsearch_configuration["ES_ARGS"]
+            elasticsearch_configuration.ES_HOST, **vars(elasticsearch_configuration.ES_ARGS)
         )
         elasticsearch_namespace.async_client = connections.es.get_async_client(
-            elasticsearch_configuration["ES_HOST"], **elasticsearch_configuration["ES_ARGS"]
+            elasticsearch_configuration.ES_HOST, **vars(elasticsearch_configuration.ES_ARGS)
         )
         elasticsearch_namespace.indices = self._validate_elasticsearch_index(elasticsearch_namespace)
 
@@ -79,8 +79,8 @@ class NameResolutionAPINamespace:
         nameres. Raises an error if we cannot find a valid index
         or alias from the configuration
         """
-        config_index = self.config.elasticsearch["ES_INDEX"]
-        config_alias = self.config.elasticsearch["ES_ALIAS"]
+        config_index = self.config.elasticsearch.ES_INDEX
+        config_alias = self.config.elasticsearch.ES_ALIAS
 
         elasticsearch_index = set()
         if config_index != "" and elasticsearch_namespace.client.indices.exists(index=config_index):
@@ -107,13 +107,13 @@ class NameResolutionAPINamespace:
         TornadoInstrumentor().instrument()
 
         trace_exporter = JaegerExporter(
-            agent_host_name=self.config.telemetry["OPENTELEMETRY_JAEGER_HOST"],
-            agent_port=self.config.telemetry["OPENTELEMETRY_JAEGER_PORT"],
+            agent_host_name=self.config.telemetry.OPENTELEMETRY_JAEGER_HOST,
+            agent_port=self.config.telemetry.OPENTELEMETRY_JAEGER_PORT,
             udp_split_oversized_batches=True,
         )
 
         trace_provider = TracerProvider(
-            resource=Resource.create({SERVICE_NAME: self.config.telemetry["OPENTELEMETRY_SERVICE_NAME"]})
+            resource=Resource.create({SERVICE_NAME: self.config.telemetry.OPENTELEMETRY_SERVICE_NAME})
         )
         trace_provider.add_span_processor(BatchSpanProcessor(trace_exporter))
 

@@ -143,7 +143,7 @@ class NameResolutionAPINamespace:
         configuration["webserver"]["SETTINGS"]["static_path"] = str(webapp_directory)
         configuration["webserver"]["SETTINGS"]["static_url_prefix"] = "/"
 
-        configuration_namespace = types.SimpleNamespace(configuration)
+        configuration_namespace = types.SimpleNamespace(**configuration)
 
         # override options
         if option_configuration.host is not None:

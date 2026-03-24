@@ -143,7 +143,13 @@ class NameResolutionAPINamespace:
         configuration["webserver"]["SETTINGS"]["static_path"] = str(webapp_directory)
         configuration["webserver"]["SETTINGS"]["static_url_prefix"] = "/"
 
-        configuration_namespace = types.SimpleNamespace(**configuration)
+        # Convert nested dicts to SimpleNamespace recursively
+        def dict_to_namespace(d):
+            if isinstance(d, dict):
+                return types.SimpleNamespace(**{k: dict_to_namespace(v) for k, v in d.items()})
+            return d
+
+        configuration_namespace = dict_to_namespace(configuration)
 
         # override options
         if option_configuration.host is not None:

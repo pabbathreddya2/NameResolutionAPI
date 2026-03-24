@@ -24,8 +24,8 @@ WORKDIR /home/nameres/configuration
 COPY --from=builder --chown=nameres:nameres /build/nameres/src/nameres/config/config.default.json /home/nameres/configuration/default.json
 COPY --from=builder --chown=nameres:nameres /build/nameres/version.txt /home/nameres/configuration/version.txt
 
-COPY --from=builder --chown=nameres:nameres /build/nameres/docker/configuration/supervisord.conf /etc/supervisor/supervisord.conf
-COPY --from=builder --chown=nameres:nameres /build/nameres/docker/configuration/Caddyfile /etc/caddy/Caddyfile
+COPY --chown=nameres:nameres ./configuration/supervisord.conf /etc/supervisor/supervisord.conf
+COPY --chown=nameres:nameres ./configuration/Caddyfile /etc/caddy/Caddyfile
 
 COPY --from=caddy_builder --chown=nameres:nameres /usr/bin/caddy /usr/bin/caddy
 
